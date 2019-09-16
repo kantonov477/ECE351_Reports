@@ -1,0 +1,257 @@
+\documentclass[12pt]{article}
+\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{2}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ User-Defined Functions \\ ------------------------------------------------------------------\\ 2 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{September 16, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab was used to introduce user-defined functions in Python 3.x and to demonstrate signal operations including time shifting, time scaling, time reversal, signal addition, and discrete differentiation. Two user-defined functions were created to be implemented in an equation that would plot the graph given in task 3 of the lab. Python 3.x, specifically in Jupyter Notebook, was used for the programming.
+\section{Equations}
+Equation used for the first task:
+\[y= cos(t)\]
+Step Function Definition:
+\[u(t) = 0  \hspace{3em} t < 0,\]
+\[u(t) = 1  \hspace{3em} t > 0\]
+
+Ramp Function Definition:
+\[r(t) = 0 \hspace{3em} t < 0\]
+\[r(t) = 1 \hspace{3em} t 	\geq 0\]
+
+Derived Equation from Task 3:
+\[mystep(t) = r(t-0) - r(t-3) + 5u(t-3) - 2u(t-6) - 2r(t-6)\]
+\[(dy/dt)*(mystep(t)) = u(t-0) - u(t-3) + \delta (t-3) - \delta(t-6) - 2u(t-6)\]
+
+\section{ Methodology}
+This lab was divided up into three parts, each introducing the user to programming one's own functions and equations.
+\subsection{Part 1}
+Using the background section programming examples, the steps and time variable were initialized with the purpose of later plotting the equations with good resolution. The simple cosine equation was implemented and plotted using a simple for loop:
+\begin{python}
+# --- User-Defined Function --- #
+# Create the output `y(t)` using a for loop and if/else statements
+def func1(t):
+    y = np.zeros((len(t),1)) # initialize `y` as a numpy array (of zeros)
+
+    for i in range(len(t)):
+        y[i] = np.cos(t[i])
+    return y
+\end{python}   
+The plotting structure from the Background section was used. The only change was that one graph was plotted using the given step initialization:
+\begin{python}
+steps = 1e-2
+\end{python}
+It was noted that changing the step variable also changed the resolution: the smaller the steps, the higher the resolution was seen to be:
+\begin{figure}[H]
+\includegraphics[scale=0.55]{output_2_0.png}
+  \caption{y = cos(t) with good resolution}
+  \end{figure}
+\subsection{Part2}
+An equation was derived from the graph below:
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_5_0.png}
+  \caption{Part 2 Graph}
+  \end{figure}
+  
+The mathematical definitions of the step and ramp functions were used to derive the equation.
+As time goes from -5 to 0, the output stays at zero. There was no need for any of the two functions to be implemented here.
+The output increases from 0 to 3 in 3 seconds at the origin. This is represented with
+\[r(t-0)\]
+The output then flattens out:
+\[-r(t-3)\]
+
+The output increases from 3 to 8 at the same time. This is represented with
+\[5u(t-3)\]
+After that, the output stays at 1 for 2 seconds and then decreases from 8 to 6 at the same time:
+\[-2u(t-6)\]
+Finally, the output decreases from 6 to 0 in the spans of 4 seconds:
+\[-2r(t-6)\]
+Putting this all together gives the equation:
+\[mystep(t) = r(t-0) - r(t-3) + 5u(t-3) - 2u(t-6) - 2r(t-6)\]
+\newline
+The step and ramp functions then were programmed and plotted.
+  The reasoning for the step function was directly inspired by its mathematical definition:
+\[u(t) = 0  \hspace{3em} t < 0,\]
+\[u(t) = 1  \hspace{3em} t > 0\]
+The variable y was implemented as an array of zeros. This would allow the user to run y in a for loop.
+The reasoning was that while the variable i was running within the range of the array, if time was less than zero, then y would also be zero. Else, if time was greater than zero, then y would be one:
+\begin{python}
+def step(t):
+    y = np.zeros((len(t),1)) #establishes array for y
+    for i in range(len(t)):
+        if t[i] < 0:
+             y[i] = 0 
+        else:
+             y[i] = 1
+    return y
+\end{python}
+This was plotted to make sure the logic was correct
+\begin{figure}[H]
+\includegraphics[scale=0.50]{output_3_0.png}
+  \caption{Sample Step Function}
+  \end{figure}
+This was then repeated with the ramp function, with slightly different logic.
+While the variable i was running, if time was less than zero, then y would also be zero. Else, if time was greater than zero, then y would equal t:
+\begin{python}
+def ramp(t):
+    y = np.zeros((len(t),1))
+    for i in range(len(t)):
+        if t[i] < 0:
+            y[i] = 0
+        else:
+            y[i] = t[i]
+    return y
+    \end{python}
+This was then plotted:
+\begin{figure}[H]
+\includegraphics[scale=0.50]{output_3_1.png}
+  \caption{Sample Ramp Function}
+  \end{figure}
+The mystep function was programmed using the same equation derived from earlier. This was plotted and was confirmed that it was correct.
+\subsection{Part 3}
+The user-defined function was used to test time reversals, time shift operations, and time scale operations. This was done by simply changing the mystep function's time parameter:
+\begin{python}
+y = my_step(-t)
+...
+y = my_step(t-4)
+...
+y = my_step(-t-4)
+...
+y = my_step(t/2)
+...
+y = my_step(2*t)
+
+\end{python}
+The plots will be shown in the results section of this report.
+\newline
+The derivative was plotted by hand taking the slope of each section and plotting it. This was a very good way of showing why the derivation of the step function was the delta function:
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.15]{Inkedsands1 derivative image_cropped_finish.jpg}
+\caption{Hand Plotted Derivative \label{overflow}}
+\end{figure}
+The numpy.diff() function was implemented to plot the derivative using Python. 
+The differentiation in respect to time had to be calculated by simply using the numpy.diff() function on t.
+With this, the whole differentiation could then be taken as dy/dt:
+\begin{python}
+steps = 1e-2
+t = np.arange(-5,10+steps,steps) 
+y = my_step(t)
+dt = np.diff(t) #had to define dt first
+dy = np.diff(y, axis=0) / dt #with dt defined, dy could be defined using the actual equation
+\end{python}
+With this, the derivation was plotted:
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.5]{output_11_0.png}
+\caption{Python Plotted Derivative \label{overflow}}
+\end{figure}
+\section{Results}
+Overall, the results I had expected prior to programming matched the results taken from the various graph plotting.
+I expected the time reversal graph to literally plot the output backward:
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.5]{output_6_0.png}
+\caption{mystep(-t) \label{overflow}}
+\end{figure}
+I had expected the time shift of t-4 to simply shift over 4 seconds to the right:
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.5]{output_7_0.png}
+\caption{mystep(t-4) \label{overflow}}
+\end{figure}
+And I had expected that the graph would double in size and shrink when applying the time scale operations respectively:
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.5]{output_9_0.png}
+\caption{mystep(t/2) \label{overflow}}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.5]{output_10_0.png}
+\caption{mystep(2t) \label{overflow}}
+\end{figure}
+One aspect that I didn't quite expect was that in the Python plotted graph of the derivative, the delta function was doing down the y-axis at 6 seconds. I had hand-plotted it as the delta function increasing at 6 seconds. 
+It of course makes sense now that the derivative of -u(t-6) would be \[-\delta(t-6)\] rather than \[\delta(t-6)\]
+\section{Error Analysis}
+
+The most difficult part of this lab was figuring out the differentiation coding of the equation. The coding syntax of this in Python is not the most intuitive, but it makes sense now that dt would first have to be defined before coding dy.
+Overall, I am still struggling with Python syntax simply because I am new to it. I am much more comfortable coding in C++, but I know that Python will be more useful to me in terms of calculations and structure.
+\section{Questions}
+1. Are the plots from Part 3 Tasks 4 and 5 identical? Is it possible for them to match? Explain why or why not.
+\newline
+My two plots are not identical due to the mistake I made in assuming the derivative of -2u(t-6) would be \[\delta (t-6)\] instead of \[-\delta(t-6)\]
+However, they should match because taking the slope of the output in sections by hand is essentially the same process as using the numpy.diff() function to take the derivation of the equation.
+
+2. How does the correlation between the two plots (from Part 3 Tasks 4 and 5) change if you were to change the step size within the time variable in Task 5? Explain why this happens.
+\newline
+If the step size were decreased, the correlation between the two plots wouldn't change, as the resolution of the Python plotted graph would become better and match the hand-drawn plot more similarly.
+If the step size were to increase, the correlation between the two plots would change. The resolution of the Python plotted graph would become worse and be seen as "clunkier" than the hand-drawn plot.
+\newline
+3. In what way can the expectations and tasks be more clearly explained for this lab? \newline
+I would suggest including more graphing and for loops examples. The best way for me to become comfortable with syntax is to see many examples and practice with them.
+\newline
+
+\section{Conclusion}
+This lab succeeded in introducing the user to user-defined functions and Python syntax for for loops, if/else statements, and plotting graphs. This lab also showed the visual relationships between delta, step, and ramp functions.
+This especially helped me understand some of the material in lecture that covered graphing these piece-wise functions and understanding the basis of delta functions.
+
+\end{document}
