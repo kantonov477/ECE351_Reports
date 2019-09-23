@@ -1,3 +1,3 @@
 # ECE351_Reports
-Lab 2 was an introduction to using Python to program user-defined functions regarding the step and ramp functions.
+These reports show the material covered in Signals and Systems 1 one-semester lab.
 Email to contact me is anto5307@vandals.uidaho.edu
