@@ -1,0 +1,301 @@
+\documentclass[12pt]{article}
+\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{3}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Discrete Convolution \\ ------------------------------------------------------------------\\ 3 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{September 23, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab was used to become more familiar with the concept of convolution and its properties. The lab consisted of using the step and ramp functions introduced by the user last lab and programming a convolution function that didn't use integrals. The equipment used included Jupyter Notebook to program in Python.
+\section{Equations}
+Step Function Definition:
+\[u(t) = 0  \hspace{3em} t < 0,\]
+\[u(t) = 1  \hspace{3em} t > 0\]
+
+Ramp Function Definition:
+\[r(t) = 0 \hspace{3em} t < 0\]
+\[r(t) = 1 \hspace{3em} t 	\geq 0\]
+
+Functions For First Task:
+\[f1(t) = u(t-2) - u(t-9)\]
+\[f2(t) = exp(-t)u(t) = e^-t*u(t)\]
+\[f3(t) = r(t-2)[u(t-2) - u(t-3)] + r(4-t)[(u(t-3) - u(t-4)]\]
+Convolution Formula:
+\[\int_{0}^{t} x(\tau)*h(t-\tau) d\tau\]
+
+\section{ Methodology}
+This lab was divided up into two parts, the first had the user plot three functions using the user-defined ramp and step functions. The second part had the user create a convolution function and compare it to the Python library convolution function.
+\subsection{Part 1}
+The step and ramp functions were used from the previous lab to plot the three functions seen in the Equations section of this lab report. 
+\begin{python}
+steps = 0.1
+t = np.arange(0,20+steps,steps)
+def step(t):
+    y = np.zeros((len(t))) #establishes array for y
+    for i in range(len(t)):
+        if t[i] < 0:
+             y[i] = 0 
+        else:
+             y[i] = 1
+    return y
+
+def ramp(t):
+    y = np.zeros((len(t)))
+    for i in range(len(t)):
+        if t[i] < 0:
+            y[i] = 0
+        else:
+            y[i] = t[i]
+    return y
+\end{python}  
+The three functions were created here using the equations given in the lab handout.
+\begin{python}
+t = np.arange(0,20+steps,steps)
+def f1(t):
+    return (step(t-2) - step(t-9)) #functions included in the lab handout
+ 
+def f2(t):
+    return (np.exp(-t))
+   
+def f3(t): 
+    return ((ramp(t - 2)*(step(t - 2) - step(t - 3))) + 
+           (ramp(4-t)*(step(t - 3) - step(t - 4))))
+\end{python}
+The three figures can be seen in the Results section of this lab report.
+\newline
+For the first function, as time goes from 0 to 2, the output would be zero. At t = 2 s, the output will increase to 1 and stay there until t = 9 s. At t = 9 s, the output goes back to 0.
+\newline
+For the second function, when t = 0 s, the output is in exponential decay till infinity.
+\newline
+For the third function, the output will be a simple triangle with a positive slope of 1 from 2 to 3 s. From 4 to 5 s, the output will have a negative slope of 1.
+
+  \subsection{Part 2}
+Part 2 consisted of creating a convolution function and comparing it to the library function.
+The reasoning behind creating a convolution function included two for loops where the sums of both functions were calculated at every instant of time, rather than performing an integral. The latter method would have been more taxing and problematic in terms of matching both arrays of time for each function.
+\begin{python}
+def my_conv(f1,f2):
+    #from numpy import zeros
+  
+    Nf1 = len(f1) #define variables that are the length of both arbitrary functions
+    Nf2 = len(f2)
+    f1Extended = np.append(f1,np.zeros((1,Nf2 - 1))) #creates array that goes to the length of f1 - 1, 
+    #because arrays begin with index 0
+    f2Extended = np.append(f2,np.zeros((1,Nf1 - 1)))
+    result = np.zeros(f1Extended.shape) #uses shape function so that arrays are the same size
+    for i in range(Nf2 + Nf1 - 2):
+    #creates for loop that goes through range of both f1 and f2 - 2, to account
+                                   #for index 0
+        result[i] = 0              #creates index
+        for j in range(Nf1):       #goes through first function
+            if (i - j + 1 > 0):    #if length of both functions is greater than length of first function
+                try:
+                    result[i] = result[i] + f1Extended[j]*f2Extended[i-j+1] 
+                    #adds durations of each function
+                except:
+                    print(i,j) 
+                    #if not convolving correctly, show where it went wrong for troubleshooting
+    return result
+\end{python}
+
+Two variables were initialized to equal the length of both functions that will be convolved. Arrays were created from both functions to be used in the convolution. The shape function was included to make sure that both arrays would have the same dimensionality. The first for loop went through the length of both functions and initialized the result array. The second for loop went through the length of the first function with the condition that the length of both functions is greater than the length of the first function. The result array would include all the additions of both functions till the length of both functions are ran through. If not, then the program would print out the array index where a mistake occurred.
+\newline
+The plots will be shown in the results section of this report.
+The library function was plotted to compare the results of the user-defined convolution function:
+\begin{python}
+y = sig.convolve(f1(t),f2(t))
+...
+y = sig.convolve(f2(t),f3(t))
+...
+y = sig.convolve(f1(t),f3(t))
+\end{python}
+
+\section{Results}
+The plotting code  of all three functions of Part 1:
+\begin{python}
+t = np.arange(0,20+steps,steps)
+y = f1(t) # function call using the user-defined function, shown in the above cell
+myFigSize = (10,10)
+plt.figure(figsize=myFigSize)
+plt.subplot(3,1,1)
+plt.plot(t,y)
+plt.grid(True)
+plt.ylabel('Function 1')
+plt.title('3 Functions')
+
+y = f2(t)
+myFigSize = (10,9)
+plt.figure(figsize=myFigSize)
+plt.subplot(3,1,2)
+plt.plot(t,y)
+plt.grid(True)
+plt.ylabel('Function 2')
+
+y = f3(t)
+myFigSize = (10,9)
+plt.figure(figsize=myFigSize)
+plt.subplot(3,1,3)
+plt.plot(t,y)
+plt.grid(True)
+plt.ylabel('Function 3')
+plt.xlabel('time (s)')
+plt.show()
+\end{python}
+\begin{figure}[H]
+\includegraphics[scale=0.55]{output_3_0.png}
+  \caption{Function 1}
+  \end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.55]{output_3_1.png}
+  \caption{Function 2}
+  \end{figure}
+  \begin{figure}[H]
+\includegraphics[scale=0.55]{output_3_2.png}
+  \caption{Function 3}
+  \end{figure}
+The plotting code of the user-defined convolution functions of Part 2:
+\begin{python}
+steps = 0.1
+t2 = np.arange(0,40+steps,steps)
+y = my_conv(f1(t),f2(t))*steps # function call using the user-defined function, shown in the above cell
+myFigSize = (10,10)
+plt.figure(figsize=myFigSize)
+plt.subplot(3,1,1)
+plt.plot(t2,y)
+plt.grid(True)
+plt.ylabel('f1(t) * f2(t)')
+plt.title('3 Functions')
+
+#t2 = np.arange(0,20+steps,steps)
+y = my_conv(f2(t),f3(t))*steps # function call using the user-defined function, shown in the above cell
+myFigSize = (10,10)
+plt.figure(figsize=myFigSize)
+plt.subplot(3,1,2)
+plt.plot(t2,y)
+plt.grid(True)
+plt.ylabel('f2(t)*f3(t)')
+plt.title('3 Functions')
+
+#t2 = np.arange(0,20+steps,steps)
+y = my_conv(f1(t),f3(t))*steps # function call using the user-defined function, shown in the above cell
+myFigSize = (10,10)
+plt.figure(figsize=myFigSize)
+plt.subplot(3,1,3)
+plt.plot(t2,y)
+plt.grid(True)
+plt.ylabel('f1(t)*f3(t)')
+plt.title('3 Functions')
+plt.show()
+\end{python}
+Plots of user-defined convolution functions v.s. library convolution functions of Part 2:
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_5_0.png}
+  \caption{User-Defined Convolution of f1 and f2}
+  \end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_6_0.png}
+  \caption{Library Convolution of f1 and f2}
+  \end{figure}  
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_5_1.png}
+  \caption{User-Defined Convolution of f2 and f3}
+  \end{figure} 
+  \begin{figure}[H]
+\includegraphics[scale=0.70]{output_6_1.png}
+  \caption{Library Convolution of f2 and f3}
+  \end{figure}  
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_5_2.png}
+  \caption{User-Defined Convolution of f1 and f3}
+  \end{figure}
+  \begin{figure}[H]
+\includegraphics[scale=0.70]{output_6_2.png}
+  \caption{Library Convolution of f1 and f3}
+  \end{figure}  
+Overall, the results I had expected prior to programming matched the results taken from the various graph plotting.
+The reason the y axis is different for the user-defined and library convolution functions is that for the former has the function multiplied by the steps, in order to adjust the plotting. This was not done for the library function.
+
+\section{Error Analysis}
+The most difficult part of the lab was including the library convolution after implementing the user-defined function. For some reason, the time arrays for both functions were not equivalent without defining a separate time variable in order to plot both functions. I first tried to solve this by getting rid of the time variables of the functions to see if that would fix the problem. But the eventual solution just included defining separate time variables for both the coding of the convolution function and the plotting.
+\section{Questions}
+1. Did you do this lab alone or with classmates? If you collaborated to get to the solution, what did that process
+look like?
+\newline
+I did this lab with classmates, specifically Alex and Andrew. We completed the lab by trying out different solutions separately, to narrow down the trial and error portion of the process. When Alex and I were stumped, we would refer to Andrew, due to his extensive knowledge of programming, probably due to the fact that he is a CompE major. 
+\newline
+2. What was the most difficult part of this lab for you, and what did the process of figuring it out look like?
+\newline
+The one of the most difficult parts of the lab was understanding the user-defined convolution function. I came to understand it better by reviewing some computer science 1 and 2 notes and refreshing on using for loops within for loops to run through arrays. Looking at sorting arrays specifically helped me understand the logic behind the convolution function.
+\newline
+3. Did you approach writing the code with analytical or graphical convolution in mind? Why did you chose this
+approach?
+\newline
+I approached it with graphical convolution in mind, since using integration in the function was not recommended. Graphical convolution helped me understand the definition in terms of addition at very instance in time, rather than just thinking of it as abstract calculus. It also helped me understand it a bit more during lecture.
+\newline
+4. Was any part of this lab not clearly explained?
+\newline
+Every part was clearly explained. I would have wanted more explanation on the difference between using integration and using a for loop within a for loop in the user-defined function.
+
+
+\section{Conclusion}
+This lab succeeded in letting the user program a convolution function from scratch and understand the literal definition of convolution, while also showing graphical convolution very clearly.
+
+\end{document}
