@@ -1,0 +1,228 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{4}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ System Step Response Using Convolution \\ ------------------------------------------------------------------\\ 4 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{October 1, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab was used to become familiar with using convolution to compute a system's step response. The lab consisted of using the step,ramp, and convolution functions introduced by the user last lab. The equipment used included Jupyter Notebook to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+Step Function Definition:
+\[u(t) = 0  \hspace{3em} t < 0,\]
+\[u(t) = 1  \hspace{3em} t > 0\]
+
+Ramp Function Definition:
+\[r(t) = 0 \hspace{3em} t < 0\]
+\[r(t) = 1 \hspace{3em} t 	\geq 0\]
+
+Functions For First Task:
+\[h1(t)= e^{2t} u(1 − t)\]
+\[h2(t)= u(t − 2) − u(t − 6)\]
+\[h3(t)= cos(\omega t) u(t)\] 
+\[f = 0.25Hz\]
+
+Convolution Formula:
+\[\int_{0}^{t} x(\tau)*h(t-\tau) d\tau\]
+
+\section{ Methodology}
+This lab was divided up into two parts, the first had the user plot three functions using the user-defined ramp, step functions, and the given functions found in the Appendices page. The second part had the user implement the user-defined convolution function and compare it to the hand-derived results using graph plots.
+\subsection{Part 1}
+The step and ramp functions were used from the 2nd previous lab before this to plot the three given functions.
+\begin{python}
+steps = 0.1
+t = np.arange(0,20+steps,steps)
+def step(t):
+    y = np.zeros((len(t))) #establishes array for y
+    for i in range(len(t)):
+        if t[i] < 0:
+             y[i] = 0 
+        else:
+             y[i] = 1
+    return y
+
+def ramp(t):
+    y = np.zeros((len(t)))
+    for i in range(len(t)):
+        if t[i] < 0:
+            y[i] = 0
+        else:
+            y[i] = t[i]
+    return y
+\end{python}  
+The three functions were created here using the equations given in the lab handout.
+\begin{python}
+def h1(t):
+    return (np.exp(2*t)*step(1 - t))
+def h2(t):
+    return (step(t - 2) - step(t - 6))
+def h3(t):
+    return (np.cos(w*t) * step(t))
+\end{python}
+The three plots of the functions are given in the Results portion of this lab report.
+  \subsection{Part 2}
+Part 2 consisted of implementing the convolution function from the previous lab to plot the step responses of all three functions.
+\begin{python}
+def my_conv(f1,f2):
+    #from numpy import zeros
+  
+    Nf1 = len(f1) #define variables that are the length of both arbitrary functions
+    Nf2 = len(f2)
+    f1Extended = np.append(f1,np.zeros((1,Nf2 - 1))) #creates array that goes to the length of f1 - 1, 
+    #because arrays begin with index 0
+    f2Extended = np.append(f2,np.zeros((1,Nf1 - 1)))
+    result = np.zeros(f1Extended.shape) #uses shape function so that arrays are the same size
+    for i in range(Nf2 + Nf1 - 2):
+    #creates for loop that goes through range of both f1 and f2 - 2, to account
+                                   #for index 0
+        result[i] = 0              #creates index
+        for j in range(Nf1):       #goes through first function
+            if (i - j + 1 > 0):    #if length of both functions is greater than length of first function
+                try:
+                    result[i] = result[i] + f1Extended[j]*f2Extended[i-j+1] 
+                    #adds durations of each function
+                except:
+                    print(i,j) 
+                    #if not convolving correctly, show where it went wrong for troubleshooting
+    return result
+\end{python}
+The convolutions were then derived by hand and plotting to be compared with the user-defined convolution function.
+\[h1(t) = e^{2t}u(1-t)\]
+\[org h1(t) = \int_{-\infty}^{\infty} e^{2t}u(1-t) dt =\int_{-\infty}^{\infty} e^{2\tau}u(1-\tau)u(t-\tau) d\tau \]
+\[org h1(t) = \int_{-\infty}^{t} e^{2\tau}u(1-\tau) d\tau\]
+\[org h1(t) = \int_{-\infty}^{t} e^{2\tau}u(1-\tau)d\tau + \int_{-\infty}^{t} e^{2\tau}u(\tau-1)d\tau\]
+\[org h1(t) = \int_{-\infty}^{t} e^{2\tau}d\tau + \int_{-\infty}^{1} e^{2\tau}d\tau\]
+\[org h1(t) = (1/2)[e^{2t}u(1-t) + e^2u(t-1)]\]
+\newline
+\[h2(t) = h2(t)= u(t − 2) − u(t − 6)\]
+\[org h2(t) = \int_{-\infty}^{\infty} u(t − 2) − u(t − 6) dt\]
+\[org h2(t) = (t-2)u(t-2) - (t-6)u(t-6)\]
+\newline
+\[h3(t) = cos(\omega t) u(t)\]
+\[org h3(t) = \int_{-\infty}^{\infty}cos(\omega t) u(t) dt\]
+\[org h3(t) = \int_{0}^{t} cos(\omega \tau) d\tau\]
+\[org h3(t) = ((sin(\omega t))/\omega) u(t)\]
+
+\section{Results}
+The plots of the first three functions:
+\begin{figure}[H]
+\includegraphics[scale=0.55]{output_3_0.png}
+  \caption{Function 1}
+  \end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.55]{output_3_1.png}
+  \caption{Function 2}
+  \end{figure}
+  \begin{figure}[H]
+\includegraphics[scale=0.55]{output_3_2.png}
+  \caption{Function 3}
+  \end{figure}
+The plotting code of the user-defined convolution functions of Part 2:
+Plots of user-defined convolution functions v.s. hand-derived convolutions of Part 2:
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_5_0.png}
+  \caption{User-Defined Convolution of f1 and f2}
+  \end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_7_0.png}
+  \caption{Hand-Derived Convolution of f1 and f2}
+  \end{figure}  
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_5_1.png}
+  \caption{User-Defined Convolution of f2 and f3}
+  \end{figure} 
+  \begin{figure}[H]
+\includegraphics[scale=0.70]{output_7_1.png}
+  \caption{Hand-Derived Convolution of f2 and f3}
+  \end{figure}  
+\begin{figure}[H]
+\includegraphics[scale=0.70]{output_5_2.png}
+  \caption{User-Defined Convolution of f1 and f3}
+  \end{figure}
+  \begin{figure}[H]
+\includegraphics[scale=0.70]{output_7_2.png}
+  \caption{Hand-Derived Convolution of f1 and f3}
+  \end{figure}  
+The reason why the results for the first two convolutions differ is because the hand-derived convolution takes the integral from negative infinity to positive infinity, whereas the user-defined function takes the range from -40 seconds to 40 seconds.
+
+\section{Error Analysis}
+The most difficult part of the lab was deriving the first function by hand. Once I figured out that the two integrals needed to be taken with the first integral of the step function 1 - t and the second integral of the step function t - 1.
+\section{Questions}
+1. Leave any feedback on the clarity of the expectations, instructions, and deliverables here.\newline
+Overall the lab was very clear in its intentions and expectations.
+
+\section{Conclusion}
+This lab succeeded in showing the user the difference between the coded convolution function and the hand-derived convolutions, as well as keeping the user familiar with the concept of convolutions and step responses.
+\clearpage
+\centering
+\section*{Appendices}
+\[h1(t)= e^{2t} u(1 − t)\]
+\[h2(t)= u(t − 2) − u(t − 6)\]
+\[h3(t)= cos(\omega t) u(t)\] 
+\[f = 0.25Hz\]
+
+\clearpage
+\end{document}
