@@ -1,0 +1,166 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{5}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+\captionsetup[figure]{font=small,skip=0pt}
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Step and Impulse Response of a RLC Band Pass Filter \\ ------------------------------------------------------------------\\ 5 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{October 8, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab was used to become familiar with using Laplace transforms to find the time-domain response of an RLC bandpass filter with impulse and step inputs. The lab consisted of using the step function and the transfer function calculated in the pre-lab. The equipment used included Spyder to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+\[R = 1k\ohm\]
+\[L = 27mH\]
+\[C = 100nF\]
+Step Function Definition:
+\[u(t) = 0  \hspace{3em} t < 0,\]
+\[u(t) = 1  \hspace{3em} t > 0\]
+
+Transfer Function:
+\[H(s) = (L||C)/( R + L||C) = (1/RC)s/(s^2 + (1/RC)s + (1/LC))\]
+
+Impulse Response:
+\[h(t) = 10356e^{-5000t}sin(18584t + 105\degree)u(t)\] 
+
+\section{ Methodology}
+This lab was divided up into two parts, the first had the user hand derive the impulse response and compare it to the library function in Python. Two graphs were plotted using the two methods. In part 2,  The second part had the user implement the user-defined convolution function and compare it to the hand-derived results using graph plots.
+\subsection{Part 1}
+The user-defined step function was used in this lab:
+\begin{python}
+step = 1e-5
+t = np.arange(0,1.2e-3+step,step)
+def the_step(t):
+    y = np.zeros((len(t))) #establishes array for y
+    for i in range(len(t)):
+        if t[i] < 0:
+             y[i] = 0 
+        else:
+             y[i] = 1
+    return y
+\end{python}  
+The hand-derived equation function was implemented:
+\begin{python}
+d = 105
+r = (105*math.pi)/180
+def org_h(t):
+    y = (10356)*np.exp(-5000*t)*np.sin((18584*t) + r)*the_step(t)
+    return y
+\end{python}
+The library function was then implemented using arrays for both numerator and denominator:
+\begin{python}
+R = 1000
+L = 0.027
+C = 100e-9
+num = [1/(R*C),0]
+den = [1,1/(R*C),1/(L*C)]
+tout,yout = sig.impulse((num,den),T = t)
+\end{python}
+The two methods were then plotted, the graphs can be seen in the Results section of this lab report.
+  \subsection{Part 2}
+In part 2, the step function in the Python library is plotted and compared to the hand-derived final value theorem with this transfer function.
+The coded step function was first implemented:
+\begin{python}
+tout2,yout2 = sig.step((num,den),T = t)
+\end{python}
+This graph was plotted and can be seen in the Results section of the lab report.
+The Final Value theorem was used here to derive the step function.
+\[\lim_{t\to\infty} h(t) = \lim_{s\to0} H(s) = \lim_{s\to0} [(1/RC)s/(s^2 + (1/RC)s + (1/LC))] = 0\]
+\clearpage
+\section{Results}
+The plot of the hand-derived transfer function:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Figure_1_Final.png}
+  \caption{Hand-Derived Transfer Function}
+  \end{figure}
+The plot of the coded transfer function:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Figure_2_Final.png}
+  \caption{Coded Transfer Function}
+  \end{figure}
+Both hand-derived and coded functions are correct.
+This plot of the step impulse of the transfer function:  
+  \begin{figure}[H]
+\includegraphics[scale=0.6]{Figure_3.png}
+  \caption{Coded Step Impulse}
+  \end{figure}
+
+The difference between the graphs of task 1 and 2 are that the task 2 graph is a step impulse function, meaning that the task 2 function's initial condition must be 0.
+
+The result of taking the final value theorem makes sense with respect to the task 2 graph makes sense is because as time goes to infinity, the output will eventually be 0. Looking at the graph shows that the output oscillates very close to 0. 
+\section{Error Analysis}
+The most difficult part of this lab was understanding the syntax for coding the transfer function. Using arrays in python is still pretty new to me, as is memorizing the syntax compared to C++.
+\section{Questions}
+1. Explain the result of the Final Value Theorem from Part 2 Task 2 in terms of the physical
+circuit components.
+\newline
+As time goes to infinity, the step impulse response becomes 0. This can be explained due to the band-pass filter passing in frequencies with an acceptable range and rejecting others. The inductor's and capacitor's reactive powers cancel out as the resonant frequency is reached.
+\newline
+2. Leave any feedback on the clarity of the expectations, instructions, and deliverables.\newline
+The expectations, instruction, and deliverables were clear. I think it would be interesting to explain the band-pass filter generally in terms of Laplace and other mathematical systems.
+\section{Conclusion}
+This lab succeeded in showing the user the difference between the coded transfer function and the hand-derived transfer function, as well as showing the user the application of the final value theorem.
+
+
+\end{document}
