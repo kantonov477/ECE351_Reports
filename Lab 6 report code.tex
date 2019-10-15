@@ -1,0 +1,204 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{6}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+\captionsetup[figure]{font=small,skip=0pt}
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Partial Fraction Expansion
+ \\ ------------------------------------------------------------------\\ 6 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{October 15, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab was used scipy.signal.residue() to perform partial fraction expansion and to compare it to hand-deriving it from a differential equation. The lab consisted of using the step function and the transfer function calculated in the pre-lab. The equipment used included Spyder to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+\[y"(t) + 10y'(t) + 24y(t) = x"(t) + 6x'(t) + 12x(t) \]
+\[y(5)(t) + 18y(4)(t) + 218y(3)(t) + 2036y(2)(t) + 9085y(1)(t) + 25250y(t) = 25250x(t)\]
+Step Function Definition:
+\[u(t) = 0  \hspace{3em} t < 0,\]
+\[u(t) = 1  \hspace{3em} t > 0\]
+
+Transfer Function:
+\[H(s) = (s^2 + 6s + 12)/((s + 6)(s + 4))\]
+Impulse Response:
+\[y(t) = (0.5 + e^{-6t} - 0.5e^{-4t})u(t)\]
+
+\section{ Methodology}
+This lab was divided up into two parts, the first had the user hand derive the step response and compare it to the library function scipy.signal.step() in Python. Two graphs were plotted using the two methods.The residue library function was then implemented to complete the partial fraction expansion. The second part had the user implement the residue library function to solve the second derivative equation. The cosine method was then programmed and used to plot the step response of the equation. It was then compared with using the step function given by the residue library function.
+\subsection{Part 1}
+The user-defined step function was used in this lab:
+\begin{python}
+step = 1e-5
+t = np.arange(0,1.2e-3+step,step)
+def the_step(t):
+    y = np.zeros((len(t))) #establishes array for y
+    for i in range(len(t)):
+        if t[i] < 0:
+             y[i] = 0 
+        else:
+             y[i] = 1
+    return y
+\end{python}  
+The hand-derived equation function was implemented:
+\begin{python}
+def org_h(t):
+    y = (0.5 + np.exp(-6*t) - (0.5*np.exp(-4*t)))
+    return y
+\end{python}
+The library function was then implemented using arrays for both numerator and denominator:
+\begin{python}
+num = [1,6,12]
+den = [1,10,24]
+tout2,yout2 = sig.step((num,den),T = t)
+\end{python}
+The two methods were then plotted, the graphs can be seen in the Results section of this lab report.
+The residue function was then implemented using matrices:
+\begin{python}
+num2 = [1,6,12]
+den2 = [1,10,24,0]
+[R,P,_]=sig.residue(num2,den2) #partial fraction expansion
+print(R)
+print(P)
+\end{python}
+output: \newline
+[ 1.  -0.5  0.5]\newline
+[-6. -4.  0.]\newline
+Compared to the hand-derived transfer function and step impulse:
+\[y(t) = (0.5 + e^{-6t} - 0.5e^{-4t})u(t)\]
+\[H(s) = (s^2 + 6s + 12)/((s + 6)(s + 4))\]
+Both methods agree on the correct answer.
+  \subsection{Part 2}
+In part 2, the residue function is implemented to solve for the partial fraction expansion of this equation:
+\[y(5)(t) + 18y(4)(t) + 218y(3)(t) + 2036y(2)(t) + 9085y(1)(t) + 25250y(t) = 25250x(t)\]
+The coded residue function was first implemented:
+\begin{python}
+num3 = [25250]
+den3 = [1,18,218,2036,9085,25250,0]
+[R,P,_] = sig.residue(num3,den3)
+print(R)
+print(P)
+\end{python}
+output:\newline
+[ 1.        +0.j         -0.48557692+0.72836538j -0.48557692-0.72836538j\newline
+ -0.21461963+0.j          0.09288674-0.04765193j  0.09288674+0.04765193j]\newline
+[  0. +0.j  -3. +4.j  -3. -4.j -10. +0.j  -1.+10.j  -1.-10.j]\newline
+The cosine method was then programmed:
+\begin{python}
+def cosine(R,P,t):
+    y=np.zeros(t.shape)
+    for i in range(len(R)): #goes through entire range of fraction expansion
+        a = P[i].real #real part using alpha variable
+        w = P[i].imag #imaginary part using p variable
+        K = abs(R[i]) #absolute value of R
+        ang = np.angle(R[i])
+        y += (K*np.exp(a*t)*np.cos((w*t) + ang))*the_step(t) #official cosine 
+        #method
+    return y
+\end{python}
+As the partial fraction expansion is read: alpha,omega, magnitude, and angle of K components are assigned.
+This was plotted and compared to the coded step function being implemented:
+\begin{python}
+num4 = [25250]
+den4 = [1,18,218,2036,9085,25250] #this is for coded step impulse
+tout3,yout3 = sig.step((num4,den4),T = t)
+\end{python}
+Both graphs are shown in the Results section of this lab report.
+
+\section{Results}
+The plot of the hand-derived transfer function:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Lab 6 hand-derived.PNG}
+  \caption{Hand-Derived Step Response Function 1}
+  \end{figure}
+The plot of the coded step response function:
+\begin{figure}[H]
+\includegraphics[scale=0.5]{Lab 6 coded 1.PNG}
+  \caption{Coded Step Response Function 1}
+  \end{figure}
+Both hand-derived and coded functions are correct.
+This plot of the cosine method of the transfer function:  
+  \begin{figure}[H]
+\includegraphics[scale=0.6]{Lab 6 hand-derived 2.PNG}
+  \caption{Cosine Method Step Response 2}
+  \end{figure}
+The plot of the coded step function: 
+\begin{figure}[H]
+\includegraphics[scale=0.5]{Lab 6 coded 2.PNG}
+  \caption{Coded Step Response Function 2}
+  \end{figure}
+All of the results are as I would expect. It also proves the usefulness and efficiency of the cosine method.
+\section{Error Analysis}
+The most difficult part of this lab setting up the for loop for the cosine method. It took a bit of thinking and remembering of python syntax (confused with C++ syntax) to understand how this could be implemented.
+\section{Questions}
+1. For a non-complex pole-residue term, you can still use the cosine method, explain why this
+works.
+\newline
+With a non-complex term, the cosine method still works because the omega part will just be 0, which would result in e to the power of 0, which is 1. This leaves just the cosine term with the magnitude and angle of R. And if R is non-complex as well, then R would be its magnitude. and the angle would simply be 0.
+\newline
+2. Leave any feedback on the clarity of the expectations, instructions, and deliverables.\newline
+The expectations, instruction, and deliverables were clear. I think it would be interesting to give more examples of complicated derivative equations.
+\section{Conclusion}
+This lab succeeded in showing the user the use of the residue function and the cosine method. It also showed the user the process of programming a mathematical method.
+
+
+\end{document}
