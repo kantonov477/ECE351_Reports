@@ -1,0 +1,187 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{7}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+\captionsetup[figure]{font=small,skip=0pt}
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Block Diagrams and System Stability
+ \\ ------------------------------------------------------------------\\ 7 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{October 22, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab was used to become familiar with Laplace-domain block diagrams and use the factored form of the transfer
+function to judge system stability.
+The closed and open loop transfer functions were calculated and plotted to compare the stability of each one respectively.
+The equipment used included Spyder to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+\[G(s) = (s + 9)/(s^2 − 6s − 16)(s + 4) \]
+\[A(s) =  (s + 4)/s^2 + 4s + 3\]
+\[B(s) = s^2 + 26s + 168 \]
+
+Isolated Poles and Zeros:
+\[G(s) = (s + 9)/(s - 8)(s + 2)(s + 4) \]
+Poles and Zeros of G(s):\newline
+Poles: -8, -4, 2\newline
+Zeros: -9\newline
+\[A(s) = (s + 4)/(s + 3)(s + 1) \]
+Poles and Zeros of A(s):\newline
+Poles: -3,-1\newline
+Zeros: -4\newline
+\[B(s) = (s + 14)(s + 12) \]
+Poles and Zeros of B(s):\newline
+Zeros: -14,-12\newline
+Negative Feedback Formula:
+\[H(s) = H_o/(1+ H_oH_f)\]
+Series Formula:
+\[H(s) = H_oH_f\]
+Open-Loop Transfer Function:
+\[H_{OL} = A*G = ((s + 4)/(s + 3)(s + 1))((s + 9)/(s - 8)(s + 2)(s + 4))\]
+\[H_{OL} = (s + 9)/(s + 3)(s + 1)(s - 8)(s + 2)\]
+Closed-Loop Symbolic Transfer Function:
+\[H_{CL} = A*(G/(1 + GB)) = (numA/denA)((numG/denG)/(1 + (numGnumB)/denG)))\]
+\[H_{CL}= numAnumG/((denG + (numGnumB))denA)\]
+Closed-Loop Numerical Transfer Function:
+\[H_{CL}= (s + 9)(s + 4)/(s + 5.162 - 9.517j)(s + 5.162 + 9.517j)(s + 6.175)(s + 3)(s + 1)\]
+\section{ Methodology}
+This lab was divided into two parts. The first part had the user isolated the poles and zeros of all three equations given. The tf2zpk function was used to check the hand-derived results. The open-loop function was derived and then plotted. The second part had the user hand-derive the closed-loop and use python to calculate the arithmetic. The closed-loop transfer function was then plotted.
+\subsection{Part 1}
+First, the poles and zeros were found by factoring all three equations. This can be seen in the equations section of this lab report. The sig.tf2zpk() function was used to check the results:
+\begin{python}
+[Z1,P1,K1] = sig.tf2zpk(num1, den1)
+\end{python}
+The outputs were printed:\newline
+zeroes of G(s) =  [-9.]\newline
+poles of G(s) =  [ 8. -4. -2.]\newline
+gains of G(s) =  1.0\newline
+zeroes of A(s) =  [-4.]\newline
+poles of A(s) =  [-3. -1.]\newline
+gains of A(s) =  1.0\newline
+zeroes of B(s) =  -14.0 -12.0\newline
+Since B(s) didn't have a denominator, the roots function was used to isolate the zeros of the function.\newline
+The open-loop transfer function was found by following the path that had the least resistance, which was found to be the path from X(s) to A(s) to Z(s) to G(s) to Y(s). Because A(s) and G(s) were in series, the transfer function would just be the two functions multiplied. \newline
+The open-loop response is not stable due to one pole of the open loop transfer function being present in the right half of 's' plane, specifically (s - 8).\newline
+The open-loop transfer system was then plotted using the step response function. The sig.convolve() function was used to expand the numerator and denominator. Because the function can only take two variables in the argument, new donominator variables were initialized to continue the fraction expansion:
+\begin{python}
+den4 = sig.convolve([1,3],[1,1]) #open loop equation is A*G denominator
+#convolution
+den5 = sig.convolve([1,-8],[1,2])  #did this in two parts
+den6 = sig.convolve(den4, den5)
+\end{python}
+As seen in the results section, the graph shows an unbounded output, which is a good visual marker for instability. This proves that the open-loop transfer function is unstable.
+
+
+  \subsection{Part 2}
+The second part started with the user symbolically solving the closed-loop transfer function. The closed-loop transfer function is found by finding Y(s) and X(s) in terms of A(s),G(s), and B(s). It can be observed that G(s) and B(s) are placed as a negative feedback system. G(s) and B(s) can be combined into one block by using the negative feedback formula found in the equations section of this lab report. Now it can be seen that A(s) is in series with the new simplified block.
+The closed-loop transfer function was then typed using each block's numerator and denominator.\newline
+The convolution and tf2zpk() functions were used to perform all the arithmetic, the results seen here:\newline
+zeroes of Closed Loop =  [-9. -4.]\newline
+poles of Closed Loop =  [-5.16237064+9.51798197j\newline -5.16237064-9.51798197j -6.17525872+0.j\newline
+ -3.        +0.j  \newline       -1.        +0.j      ]\newline
+gains of Closed Loop =  0.5\newline
+The closed-loop response is stable because all the poles are present in the left-side of the 's' plane.\newline
+The step response was then used to plot the closed-loop transfer function.\newline
+As seen in the results section of the lab report, the second graph has a clearly bounded output, which shows that the closed-loop transfer function is stable.
+
+\section{Results}
+The printed output of Part 1:\newline
+zeroes of G(s) =  [-9.]\newline
+poles of G(s) =  [ 8. -4. -2.]\newline
+gains of G(s) =  1.0\newline
+zeroes of A(s) =  [-4.]\newline
+poles of A(s) =  [-3. -1.]\newline
+gains of A(s) =  1.0\newline
+zeroes of B(s) =  -14.0 -12.0\newline
+The plot of the open-loop transfer function:
+\begin{figure}[H]
+\includegraphics[scale=0.7]{Lab 7 task 1.PNG}
+  \caption{Open-Loop Transfer Function}
+  \end{figure}
+The plot of the closed-loop transfer function:
+\begin{figure}[H]
+\includegraphics[scale=0.7]{Lab 7 task 2.PNG} 
+  \caption{Closed-Loop Transfer Function}
+  \end{figure}
+The results found are exactly what was expected from the assumptions calculated. The poles and zeros were correct and the graphs visually prove the instability and stability of open and closed loop transfer functions, respectively.
+\section{Error Analysis}
+The most difficult part of this lab was deriving the closed-loop transfer function symbolically. Another obstacle was figuring out how to convolve more than two variables. I found two solutions to this problem. The first was to initialize new denominators that would be the convolution of two variables, or including a convolution function within a convolution function.
+
+\section{Questions}
+In Part 1 Task 5, why does convolving the factored terms using scipy.signal.convolve() result in the expanded form of the numerator and denominator? Would this work with your user-defined convolution function from Lab 3? Why or why not?\newline
+Convolution in the Laplace domain ends up being multiplication, which is why convolving the factored terms results in the expanded forms. Since the user-defined convolution depends on the sum of durations of both functions, it should be able to perform the same task.\newline
+2. Discuss the difference between the open- and closed-loop systems from Part 1 and Part 2.
+How does stability differ for each case, and why?\newline
+The open-loop system was unstable, due to one of its poles being present in the right side of the 's' plane. The closed-loop system was stable, due to all of its poles being present in the left side of the 's' plane.\newline
+3. What is the difference between scipy.signal.residue() used in Lab 6 and scipy.signal.tf2zpk() used in this lab?\newline
+The residue function performed the actual partial fraction expansion, whereas the scipy.signal.tf2zpk() only found the poles and zeros of the transfer functions.\newline
+4. Is it possible for an open-loop system to be stable? What about for a closed-loop system to
+be unstable? Explain how or how not for each.\newline
+An open-loop system can be stable if all of its poles are present in the left side of the 's' plane. The function in this lab would be stable if one of the poles was -8, not 8.\newline
+A closed-loop system can be unstable if at least one of its poles is in the right side of the 's' plane. An example could be if one of the poles was 1, not -1 as in this lab.\newline
+5. Leave any feedback on the clarity/usefulness of the purpose, deliverables, and expectations for this lab.\newline
+I think if the terms poles, zeros, and gains were explicitly defined, I would not have been as confused as I was at the start of the lab. I kept getting terms confused with the residue function in the last lab.
+\section{Conclusion}
+This lab succeeded in explaining to the user the workings of block diagrams. It also showed the user how to tell if a system is stable or unstable, how to expand factored terms using the convolve function, and how to find open and closed loop transfer functions.
+
+
+\end{document}
