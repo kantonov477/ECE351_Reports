@@ -1,0 +1,147 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{8}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+\captionsetup[figure]{font=small,skip=0pt}
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Fourier Series Approximation of a Square Wave
+ \\ ------------------------------------------------------------------\\ 8 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{October 29, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab showed the user how to use Fourier Series to approximate periodic time-domain signals. A plotting of a signal was given in the lab handout, and the square wave was approximated and then its Fourier series approximations were plotted.
+The equipment used included Spyder to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+\[a_k = 2/T\int_{0}^{T} x(t)cos(kw_0t) dt = 0\]
+\[b_k = 2/T\int_{0}^{T} x(t)sin(kw_0t) dt = (2/(k*np.pi))*(1 - np.cos(k*np.pi))\]
+\[a_0 = 0\]
+\[x(t) = (1/2)a_0 + \sum_{k=1}^{\infty} a_kcos(kw_0t) + b_ksin(kw_0t)\] 
+\[x(t) = \sum_{k=1}^{\infty} + (2/(k*np.pi))*(1 - np.cos(k*np.pi))(kw_0t)\]
+\[w_0 = 2\pi/T\]
+\section{Methodology}
+First, using the results from the pre-lab, the expression for $a_k$ and $b_k$ were implemented into Spyder. These equations were implemented as functions, so that the approximations of k being 0,1,2,3 for both $a_k$ and $b_k$ could be printed, as seen in the Appendix section of the report. Below are the functions:
+\begin{python}
+def ak(k):
+    a = 0 #because the function is odd
+    return a
+
+def bk(k):
+    b = (2/(k*np.pi))*(1 - np.cos(k*np.pi)) #this part was calculated in the
+    #pre-lab
+    return b
+\end{python}
+Then, an array was used to plot Fourier series approximation for 6 values, ranging from 1 to 1500. The period was set to 8 seconds. The code for the graph plotting was such that the first three N values were plotted in one figure in order, and the second three N values were plotted in the second figure.\newline
+This was done using three for loops: the first for loop was to go through the range of both figures, the second for loop to go through the range of all 6 plots devided into 3, and the third for loop was to calculated all 6 Fourier series approximation:
+\begin{python}
+for h in [1,2]:#so that we can have two figures only
+    for i in (1 + (h-1)*3,2 + (h-1)*3,3 + (h-1)*3): #so that we can have 3 
+        #plots per figure
+        for k in np.arange(1,N[i - 1] + 1): #goes through entire range of N
+            b = (2/(k*np.pi))*(1 - np.cos(k*np.pi))
+            x = b*np.sin(k*((2*np.pi)/T)*t) #official fourier series equation
+            y = y + x #add both b constant and x
+\end{python}
+The plotting itself was done so that the plots would go in chronological order in both figures, and that the N value would correspond with each subplot. The range for time was from 0 to 20 seconds.
+
+\section{Results}
+The plot of the first three approximations:
+\begin{figure}[H]
+\includegraphics[scale=0.8]{figure 1.PNG}
+  \caption{Fourier Series Approximations of 1,3,15}
+  \end{figure}
+The plot of the second three approximations:
+\begin{figure}[H]
+\includegraphics[scale=0.8]{figure 2.PNG} 
+  \caption{Fourier Series Approximations of 50,150,1500}
+  \end{figure}
+The results found are exactly what was expected from the assumptions calculated. It shows that the more approximations made based on the N value, the more accurate the graphs became.
+\section{Error Analysis}
+The most difficult part of this lab was figuring out the logic behind the three for loops. At first, I couldn't understand why three for loops were needed when I could calculate the approximations using 2. But once the hierarchy of the figure, then subplots, then calculations were stated, the logic was straightforward from that point. 
+
+\section{Questions}
+1. Is x(t) an even or an odd function? Explain why.\newline
+x(t) is odd because it is not symmetrical around the y-axis and \[x(t) = -x(-t)\]
+2. Based on your results from Task 1, what do you expect the values of a2, a3, . . . ,an to be?
+Why?\newline
+All values of $a_k$ will be zero, due to the function being odd.\newline
+3. How does the approximation of the square wave change as the value of N increases? In what
+way does the Fourier series struggle to approximate the square wave?\newline
+The approximation of the square wave increases in accuracy as the value of N increases. One can say that if N approaches infinity, then the plotting will look exactly like the original square wave signal. The Fourier series struggles when the N value is small. A good example of this is when N equals 1: the graphing is just the sine wave, which it is technically what the Fourier series approximation is. 
+\newline
+4. What is occurring mathematically in the Fourier series summation as the value of N increases?\newline
+The Fourier series is summing up all the sine waves equal to the value of N. As N increases, the number of sine waves increases, until the huge summation starts to look like the square wave.\newline
+5. Leave any feedback on the clarity of lab tasks, expectations, and deliverables.
+\newline
+I suggest giving a python cheat sheet that has the syntax of how to implement for loops. I'm sure I wasn't the only person to automatically start out with C++ syntax for for loops.
+\section{Conclusion}
+This lab succeeded in explaining to the user what the Fourier series approximations did and how they would look graphically. It also let the user practice using python syntax and logic behind using nested for loops.
+\clearpage
+
+\section*{Appendix}
+$a_0$ =  0\newline
+$a_1$ =  0\newline
+$b_1$ =  1.2732395447351628\newline
+$b_2$ =  0.0\newline
+$b_3$ =  0.4244131815783876\newline
+\end{document}
