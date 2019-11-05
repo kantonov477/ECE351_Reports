@@ -1,0 +1,232 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{9}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+\captionsetup[figure]{font=small,skip=0pt}
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Fast Fourier Transform
+ \\ ------------------------------------------------------------------\\ 9 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{November 5, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab showed the user how the algorithm fast Fourier transforms could be used. It also showed the user the different outcomes of the fast Fourier transforms of different inputs.
+\newline
+The equipment used included Spyder to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+\[x_1(t) = cos(2\pi t)\]
+\[x_2(t) = 5sin(2\pi t)\]
+\[x_3(t) = 2cos((2\pi * 2t) − 2) + sin2
+((2\pi * 6t) + 3)\]
+\[x(t) = (1/2)a_0 + \sum_{k=1}^{\infty} a_kcos(kw_0t) + b_ksin(kw_0t)\] 
+\[x(t) = \sum_{k=1}^{\infty} + (2/(k*np.pi))*(1 - np.cos(k*np.pi))(kw_0t)\]
+\[w_0 = 2\pi/T\]
+\[F {cos (2\pi f_0t)} =1/2[\delta (f − f_0) + \delta (f + f_0)]\]
+\[F {sin (2\pi f_0t)} =j/2[\delta (f − f_0) + \delta (f + f_0)]\]
+\section{Methodology}
+First, the user-defined fast Fourier transform function was implemented within Python Spyder. All three inputs were placed in an array called x. The variable h was used to begin the first for loop that would go through three times, for each figure of the first three task:
+\begin{python}
+for h in [1,2,3]:
+        [X_mag, X_phi, freq] = FFT(x[h-1],fs)
+        
+        myFigSize = (12,8)
+        plt.figure(h, figsize=myFigSize)    
+        plt.subplot(3,1,1)
+        plt.plot(t,x[h-1])
+        plt.grid(True)
+        plt.ylabel('x(t)')
+        plt.title('Task 1 - User Defined FFT of x(t)' ) #graph of actual 
+        #function
+        plt.xlabel('t (s)')    
+        plt.show()
+        
+        plt.subplot(3,2,3)
+        
+        plt.stem ( freq, X_mag, use_line_collection=True )
+        plt.grid(True)
+        plt.ylabel('X_magn') #magnitude, not zoomed in
+        #plt.xlabel('frequency')    
+        plt.show()
+        
+        plt.subplot(3,2,4)
+        plt.stem ( freq , X_mag,use_line_collection=True)
+        plt.grid(True)
+        if h == 3: #magnitude, zoomed in
+            plt.xlim(-15,15)
+        else:
+            plt.xlim(-2,2)
+        
+        #plt.ylabel('X_magn')
+        #plt.xlabel('frequency')    
+        plt.show()
+        
+        plt.subplot(3,2,5)
+        plt.stem ( freq , X_phi,use_line_collection=True )
+        plt.grid(True)
+        
+        plt.ylabel('X_phi') #phase angle, not zoomed in
+        plt.xlabel('frequency')    
+        plt.show()
+        
+        plt.subplot(3,2,6)
+        plt.stem ( freq, X_phi,use_line_collection=True )
+        plt.grid(True)
+        if h == 3: 
+            plt.xlim(-15,15)
+        else:
+            plt.xlim(-2,2)
+        
+        
+        #plt.ylabel('X_magn')
+        plt.xlabel('frequency')   #phase angle zoomed in 
+        plt.show()  
+\end{python} 
+The actual input was graphed first. Using the user-defined function, the magnitude and phase angle of the output were graphed using the frequency domain. The frequency domain was then limited from -2 to 2 for both the magnitude and phase angle of the output. This was then repeated for the other two signals, using the index of x to compute and graph each one. The only exception was the inclusion of an if statement for the third signal. The "zoomed in" graphs had the domain extended from -15 to 15, in order for the pattern behavior to be observed.
+\newline
+It was noticed that the plots of the phase angle for each input were not readable. A new clean version of the FFT function was implemented. The only addition was the logic that as the for loop ran through the range of the phase angle array, if any index of the magnitude array was less than $10^-10$, then that value of phase angle will be 0.\newline
+A new for loop was made, with the same logic as with the first for loop made in task 1,2,and 3. The only exception was that the clean function was called instead. These were plotted.
+\newline
+For task 5, the code from the last lab was implemented to run the Fourier series approximation through the clean FFT function. The same for loop to find y from lab 8 was used and the same plotting syntax was implemented.
+\clearpage
+\section{Results}
+The first three figures with the regular FFT Function:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Figure 1.PNG}
+  \caption{FFT transform of $x_1(t)$}
+  \end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Figure 2.PNG}
+  \caption{FFT transform of $x_2(t)$}
+  \end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Figure 3.PNG}
+  \caption{FFT transform of $x_3(t)$}
+  \end{figure}  
+The plot of the second three approximations:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Figure 4.PNG} 
+  \caption{Clean FFT transform of $x_1(t)$}
+  \end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Figure 5.PNG} 
+  \caption{Clean FFT transform of $x_2(t)$}
+  \end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.6]{Figure 6.PNG} 
+  \caption{Clean FFT transform of $x_3(t)$}
+  \end{figure}
+The last plot of the Fourier series approximation with the clean FFT function  
+ \begin{figure}[H]
+\includegraphics[scale=0.6]{Figure 7.PNG} 
+  \caption{Fourier Series Approximation with Clean FFT Transform}
+  \end{figure} 
+It was noticed that once the significantly small values of the FFT magnitudes were eliminated, the phase angle plots were readable. It was interesting to point out the third input when put through the clean FFT function showed a more crowded phase angle plot, even with the eliminated small magnitude values.
+\newline
+
+\section{Error Analysis}
+The most difficult part of this lab was figuring out the logic for the two for loops for the regular and clean FFT functions. One obstacle was my mistake in not calling the variables for the clean FFT function in the correct order.
+
+\section{Questions}
+1. What happens if fs is lower? If it is higher? fs in your report must span a few orders of
+magnitude.\newline
+Here is a plot with the fs value of 10 Hz:
+ \begin{figure}[H]
+\includegraphics[scale=0.6]{fs of 10 plot.PNG} 
+  \caption{FFT function of $X_3(t)$}
+  \end{figure}
+Here is a plot with  the fs value of 1000 Hz:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{fs of 1000 plot.PNG} 
+  \caption{FFT function of $X_3(t)$}
+  \end{figure} 
+Here is a plot with the fs value of 100000 Hz:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{fs of 100000.PNG} 
+  \caption{FFT function of $X_3(t)$}
+  \end{figure}
+The results show that no matter how high or low the frequency, the magnitude will remain the same. However, the phase angle values will oscillate more with a higher frequency, and vice versa.\newline
+2. What difference does eliminating the small phase magnitudes make?\newline
+It makes the phase angle graphs easier to read. It also eliminates the extraneous phase angle values that would have correlated with the small magnitude values.\newline
+3. Verify your results from Tasks 1 and 2 using the Fourier transforms of cosine and sine. Explain why your results are correct. You will need the transforms in terms of Hz, not rad/s.
+For example, the Fourier transform of cosine (in Hz) is:
+\[F {cos (2\pi f_0t)} =1/2[\delta (f − f_0) + \delta (f + f_0)]\]
+The Fourier transform of sine (in Hz) is:
+\[F {sin (2\pi f_0t)} =j/2[\delta (f − f_0) + \delta (f + f_0)]\]
+For first input of $x_1(t) = cos(2\pi t)$, the Fourier transform is:
+\[F {cos (2\pi f_0t)} =1/2[\delta (f − 1) + \delta (f + 1)]\]
+This is correct when compared to the magnitude graph, which shows two delta functions at the same positions with the same magnitude of 0.5.\newline
+For second input of $x_2(t) = 5sin(2\pi t)$, the Fourier transform is:
+\[F {sin (2\pi f_0t)} =2.5j[\delta (f − 1) + \delta (f + 1)]\]
+This is correct when compared to the magnitude graph. The magnitude can be seen to be about 2.5.
+\newline
+The coded results are correct due to the FFT algorithm, which is the equivalent of hand-deriving, but in a more efficient way.\newline
+4. Leave any feedback on the clarity of lab tasks, expectations, and deliverables. \newline
+I would suggest more in-depth explanation of the FFT function code and the difference between the fast Fourier transform and the regular transform.\newline
+
+
+\section{Conclusion}
+In conclusion, this lab showed how the fast Fourier transform function worked and how it compared to the regular derivation by hand. It also showed the user several different examples of inputs to see how they would be transformed and graphed.
+
+
+
+\end{document}
