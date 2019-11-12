@@ -1,0 +1,144 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{10}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+\captionsetup[figure]{font=small,skip=0pt}
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Frequency Response
+ \\ ------------------------------------------------------------------\\ 10 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{November 12, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab showed the user how to use frequency response tools and Bode plots. It also showed the user both the hand-derived and coded bode plots.
+\newline
+The equipment used included Spyder to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+\[H(s) = (1/RC)s/s^2 + (1/RC)s + (1/LC)\]
+\[|H(jw)| = (1/RC)(w)/\sqrt{(w^2 + (1/LC))^2 + ((1/RC)w)^2}\]
+\[\angle H(jw) = \pi/2 - tan^-1((R/L)w/(1/LC)-w^2)\]
+\[x(t) = cos(2\pi * 100t) + cos(2\pi * 3024t) + sin(2\pi * 50000t)\]
+\section{Methodology}
+\subsection{Part 1}
+First, the pre-lab magnitude and phase equations were implemented in Python:
+\begin{python}
+y2 = (w/(R*C))/np.sqrt((w**4 + ((1/(R*C))**2 - (2/(L*C)))*w**2 + (1/(L*C))**2))
+y3 = (np.pi/2) - np.arctan((w/(R*C))/(-w**2 + (1/(L*C))))
+\end{python}
+These expressions were used to plot the magnitude and phase from $10^3$ rad/s to $10^6$ rad/s. The step used was 100, and the values for resistance, inductance, and capacitance were initialized. Matplotlib.pyplot.semilogx() function was used to plot the x-axis on a logarithmic scale. The magnitude was also adjusted using the 
+\[20*log10(y2)\]
+The phase angle  was adjusted using a for loop that stated that if the denominator became less than zero going through the range of w, then the expression would be decremented by $\pi$.The phase angle was also then converted to degrees. This concluded the hand-derived bode plot task.\newline
+To use the Python library to code the bode plot, scipy.signal.bode was used. Both plots were compared to see if they matched. Next, the frequency response was plotted with respect to Hz by using the con.TransferFunction function.
+\subsection{Part 2}
+The signal:
+\[x(t) = cos(2\pi * 100t) + cos(2\pi * 3024t) + sin(2\pi * 50000t)\]
+was implemented using Python. It was then plotted with a sample frequency and a step size of 1/fs. The sample frequency had to be adjusted so that all three frequencies would be captured in the plot.
+This signal was then passed through the RLC circuit. The transfer function was converted into the z-domain by using scipy.signal.bilinear() function. The input signal was then passed through the filter using the spicy.signal.lfilter() function. The output signal was then plotted.
+\section{Results}
+The hand-derived bode plot:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{task 1 hand bode.PNG}
+  \caption{Hand-Derived Bode Plot}
+  \end{figure}
+The coded bode plot:
+\begin{figure}[H]
+\includegraphics[scale=0.85]{task 2 code bode original.PNG}
+  \caption{Coded Bode Plot}
+  \end{figure}  
+The coded bode plot with control function:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{task 2 code bode.PNG}
+  \caption{Coded Bode Plot with Control Function}
+  \end{figure}
+The coded input signal:  
+\begin{figure}[H]
+\includegraphics[scale=0.5]{task 3 signal.PNG}
+  \caption{Input Signal}
+  \end{figure}  
+The coded output signal:
+\begin{figure}[H]
+\includegraphics[scale=0.5]{task 3 output.PNG} 
+  \caption{Output Signal}
+  \end{figure}
+
+It was noticed that it took a huge frequency of $10^8$ to capture all three frequencies in the third graph. 
+\newline
+
+\section{Error Analysis}
+It was noticed that the hand-derived phase angle graph  completely matched the coded phase angle graph. Earlier, I made a mistake in the capacitor value, which led to some time lost in correcting the hand-derived and coded bode plots.
+
+\section{Questions}
+1. Explain how the filter and filtered output in Part 2 makes sense given the Bode plots from Part 1. Discuss how the filter modifies specific frequency bands, in Hz.\newline
+The amplitude of the filter inversely correlates with the magnitude bode plots. The filter can narrows and widen the specific frequency bands, which can elimate noise from other unecessary frequencies.\newline
+2. Discuss the purpose and workings of scipy.signal.bilinear() and scipy.signal.lfilter().\newline
+The bilinear function converts the transfer function to the z-domain in order for the input signal to pass through it and be plotted.\newline
+The lfilter function passes the input signal through the filter using some for loops that goes through the entire array of w of both the input signal and filter. \newline
+3. What happens if you use a different sampling frequency in scipy.signal.bilinear() than you used for the time-domain signal?\newline
+If the different sampling frequency was higher than the original frequency, then the amplitude is expanded, due to more harmonics being included. If the different sampling frequency is lower, then the amplitude is contracted.\newline
+4. Leave any feedback on the clarity of lab tasks, expectations, and deliverables.\newline
+
+
+\section{Conclusion}
+In conclusion, this lab showed how the frequency response and Bode plots can show the filter and filtered output of an input signal with a transfer function.
+
+\end{document}
