@@ -1,0 +1,116 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{11}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+\captionsetup[figure]{font=small,skip=0pt}
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Z-Transform Operations
+ \\ ------------------------------------------------------------------\\ 11 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{November 19, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab showed the user how to 
+analyze a discrete system using Python and a function developed by Christopher Felton.
+\newline
+The equipment used included Spyder to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+\[y[k] = 2x[k] − 40x[k − 1] + 10y[k − 1] − 16y[k − 2]\]
+\[16z^{-2}Y(z) + Y(z) + z^{-1}y[-1]+y[-2] - 10z^{-1}y(z) - y[-1] = 2X(z) - 40z^{-1}X(z) - x[-1]\]
+\[Y(z)(16z^{-2} + 1 - 10Z^{-1}) = X(z)(2 - 40z^{-1})\]
+\[H(z) = 2z(z - 20)/(z-8)(z-2)\]
+\[H(z)/z = 2z(z - 20)/(z-8)(z-2) = A/(z-8) + B/(z-2)\]
+\[A = -4\]
+\[B = 6\]
+\[H(z) = -4z/(z-8) + 6z/(z-2)\]
+\[h[k] = -4(8^k)u[k] + 6(2^k)u[k]\]
+
+\section{Methodology}
+First, the transfer function was found by hand. h[k] was then found using fraction expansion. \newline
+Scipy.signal.residuez() was then used to verify the partial fraction expansion done by hand.
+The zplane() function was then used to obtain the pole-zero plot for H(z). Scipy.signal.freqz() was used to plot the magnitude and phase response of H(z).
+\section{Results}
+The z-plane plot:
+\begin{figure}[H]
+\includegraphics[scale=1]{Z pole plot.PNG}
+  \caption{Z-Plane Plot}
+  \end{figure}
+The coded Magnitude and Phase Plot:
+\begin{figure}[H]
+\includegraphics[scale=0.85]{2nd plot.PNG}
+  \caption{Coded Magnitude and Phase Plot}
+  \end{figure}  
+\section{Error Analysis}
+It was noticed that the output for both magnitude and phase was not stable, which was to be expected.
+
+\section{Questions}
+1. Looking at the plot generated in Task 4, is H(z) stable? Explain why or why not.\newline
+The transfer function is not stable because its range goes beyond the unit circle, also known as $2\pi$.
+2. Leave any feedback on the clarity of lab tasks, expectations, and deliverables.\newline
+I may suggest a more in-depth explanation of the stability of transfer functions in the z-domain? How does it compare to the reason in the s-domain?
+
+
+\section{Conclusion}
+In conclusion, this lab showed the user how to build and analyze discrete system in the z domain using both hand-derived equations and the library functions Python and Christopher Felton provides.
+
+\end{document}
