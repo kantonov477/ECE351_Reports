@@ -1,0 +1,223 @@
+\documentclass[12pt]{article}
+%\documentclass{scrartcl}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\rhead{Kate Antonov}
+\lhead{12}
+\pagestyle{fancy}
+\usepackage{pythontex}
+\usepackage{pythonhighlight}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{capt-of}
+\usepackage{grffile}
+\usepackage[export]{adjustbox}
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\documentclass{article}
+\captionsetup[figure]{font=small,skip=0pt}
+\graphicspath{ {./images/} }
+ 
+
+% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+
+\title{ECE 351-Section 51 \\ Filter Design
+ \\ ------------------------------------------------------------------\\ 12 \\------------------------------------------------------------------}
+ \author{Submitted by: \\  Kate Antonov}
+ \date{December 10, 2019}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+
+\maketitle
+
+\vspace{\fill}
+\thispagestyle{empty}
+\clearpage
+
+%Make Table of Contents
+\clearpage
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+This lab showed the user how to apply the skills and concepts from the lab, specifically the FFT user-defined function and the Python sig.bode and con.bode library functions, to design a filter.
+\newline
+The equipment used included Spyder to program in Python. To test my code, click on this link: 
+\url{https://github.com/kantonov477/ECE351_Code}
+\newline
+To see my lab report code, click on this link here: 
+\url{https://github.com/kantonov477/ECE351_Reports}
+\section{Equations}
+Band-Pass Filter Equation:
+\[H(s) = \frac {\beta s}{s^2 + \beta s + w_o^2}\]
+\[H(s) = \frac{(1/RC)s}{s^2 + (1/RC)s + (1/LC)}\]
+\[\beta = w_{c2} - w_{c1} = 2000 - 1800 = 200Hz\]
+\[w_o = 1900*2*\pi = 11938.05 rad\]
+\[C = 0.1 \mu F\]
+\[\beta = \frac{1}{RC}\]
+\[R_{original} = \frac{1}{0.1*10^-6*200} = 50k\ohm\]
+\[R_{new} = 4.95*10^2\]
+\[w_o^2 = \frac{1}{LC}\]
+\[L = \frac{1}{11938.05^2 * 0.1*10^-6} = 70.16mH\]
+\section{Methodology}
+Task 1 had the user identify the low frequency vibration, position measurement, and switching amplifier magnitudes and frequencies, respectively. This was done by taking the sensor-signal and running it through the user-defined Fast Fourier Transform function from Lab 9. 4 graphs were plotted, going through the total range, the range of low frequency vibration, position measurement information, and switching amplifier. Because the signal needed to be filtered between 1.8 and 2 kHz, the resonant frequency was found to be 1.9 kHz, and the corner frequencies were reasoned to be 1.8 and 2 kHz. The range for the low frequency vibration was 1 to 1800 Hz. The position measurement information was the range between 1.8 and 2 kHz. The range for the switching amplifier was 2 kHz to 100kHz.
+\newline \newline
+Task 2 had the user design an analog filter circuit to remove noise and pass the position measurement information. It was obvious that the filter circuit needed to be a band-pass filter, since the signal had to be filtered and passed between only two frequencies. The design went through many iterations. The first circuit was modeled so that the inductor, capacitor, and resistor were in series, with output voltage measured across the resistor. This yielded a bode plot that didn't meet the filter requirements set. The next iteration was a typical narrow-pass filter, which employed the use of an op-amp. This was deemed to be too complicated and also didn't meet the filter requirements. After much revision, the final filter design was taken from lab 10, referenced in the Results section.\newline \newline
+The capacitor in this filter was given the value of $0.1 \mu F$, which is a very common value used in avionics. The calculated resistor and inductance values were found using the band-pass equations found in the Equations section of this lab report. The band-width was used to calculate resistance and the resonant frequency was used to calculate inductance.\newline \newline
+Task 3 had the user generate a Bode plot of the filter.The component values were implemented in the Python program. The sig.bode and con.bode library functions were used to generate the Bode plots. The filter requirements were still not met, specifically the attenuation for the position measurement information and the switching amplifier noise. This was fixed by decreasing the magnitude of order of the resistor from $10^4$ to $10^2$. This got the attenuation of the position measurement information to be well within the -0.3 dB and the attenuation of the switching amplifier noise to be more than the required -21dB. The details are discussed in the Results section of this lab report. 5 graphs were plotted, corresponding with the ranges described in Task 1.\newline \newline
+Task 4 had the user filter the noisy sensor signal using the analog filter design and demonstrate that the output signal had been attenuated with the given requirements. The sig.bilinear and sig.lfilter Python library functions were used to filter the signal, and the Fast Fourier Transform function was used to show that the signal was correctly attenuated.\clearpage
+\section{Results}
+Filter Analog Circuit:
+\begin{figure}[H]
+\includegraphics[scale=1, center]{"Circuit".PNG}
+  \caption{Filter Analog Circuit: $C = 0.1\mu F$, $L = 70.16mH$, $R = 4.95*10^2 \ohm$}
+  \end{figure}
+This is the final form of the band-pass circuit. 
+ 
+Original Noise Signal:
+\begin{figure}[H]
+\includegraphics[scale=0.64]{"original noise signal".PNG}
+  \caption{Noise Signal}
+  \end{figure}
+
+Task 4 Filtered Output Signal:
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.535]{"Task 4 filtered output".PNG}
+  \caption{Task 4 Filtered Output Signal}
+  \end{figure}
+  It can be observed that the filter design was correct, since the filtered output signal is the same shape and correct magnitudes when compared with the original noisy signal. The only difference is that the output signal has a cleaner shape and has less noise.
+  \clearpage
+Task 1 FFT Total Range:
+\begin{figure}[H]
+\includegraphics[scale=0.5, center]{"task 1 total range".PNG}
+  \caption{Task 1 FFT Total Range}
+  \end{figure}
+  
+  Task 4 New FFT Total Range:
+\begin{figure}[H]
+\includegraphics[scale=0.5, center]{"task 4 total range".PNG}
+  \caption{Task 4 New FFT Total Range}
+  \end{figure}
+This shows that the filtered signal has significantly smaller and less noise in the low-frequency vibration and switching amplifier ranges. The FFT outputs in the position measurement range should be the same, as that's the bandwidth the signal is being passed through.
+\clearpage  
+Task 1 FFT Low-Frequency Vibration Noise:
+\begin{figure}[H]
+\includegraphics[scale=0.5, center]{"task 1 range from 1 to 1800".PNG}
+  \caption{FFT Low-Frequency Vibration Noise}
+  \end{figure}
+  
+  Task 4 New FFT Low-Frequency Vibration Noise:
+\begin{figure}[H]
+\includegraphics[scale=0.5, center]{"task 4 from 1 to 1800".PNG}
+  \caption{Task 3 New FFT Low-Frequency Vibration Noise}
+  \end{figure}
+The band-pass filter got the output measured at 50Hz to decrease from 0.8 to 0.2 FFT output, significantly decreasing the noise in the range 1 to 1800Hz.
+\clearpage 
+Task 1 FFT Position Measurement: 
+\begin{figure}[H]
+\includegraphics[scale=0.5, center]{"task 1 range from 1800 to 2000".PNG}
+  \caption{Task 1 FFT Position Measurement}
+  \end{figure}
+  
+  Task 4 New FFT Position Measurement:
+\begin{figure}[H]
+\includegraphics[scale=0.5, center]{"task 4 from 1800 to 2000".PNG}
+  \caption{Task 3 New FFT Position Measurement}
+  \end{figure}
+As expected, the magnitude measured between the two corner frequencies would be the same in both the original and filtered signals.
+\clearpage  
+Task 1 FFT Switching Amplifier Noise:
+\begin{figure}[H]
+\includegraphics[scale=0.5, center]{"task 1 range from 2000 to 100000".PNG}
+  \caption{Task 1 FFT Switching Amplifier Noise}
+  \end{figure}
+  
+  Task 4 New FFT Switching Amplifier Noise:
+\begin{figure}[H]
+\includegraphics[scale=0.5, center]{"task 4 from 2000 to 100000".PNG}
+  \caption{Task 4 New FFT Switching Amplifier Noise}
+  \end{figure}
+The outputs seen from $10^4$ to $10^5$Hz decreased when the signal was filtered. Specifically, the outputs at $5*10^4$Hz decreased from 0.8 and 0.5 to below 0.1, respectively.
+\clearpage  
+Task 3 Total Range Bode Plot:
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6, center]{"task 3 total bode plot".PNG}
+  \caption{Task 3 Total Range Bode Plot}
+  \end{figure}
+It can be observed that the peak of this magnitude band-pass bode plot corresponds with the resonant frequency, which was calculated to be 1.9kHz. Even with the overall plot, it can be observed that the low-frequency vibration and switching amplifier ranges are appropriately attenuated. After much trial and error, it was found that changing the inductance moved the bode plot to the left and right, changing the conductor moved it up and down, and changing the resistance narrowed and widened it.
+  \clearpage
+Task 3 Low-Frequency Vibration Noise Bode Plot: 
+\begin{figure}[H]
+\includegraphics[scale=0.6, center]{"task 3 bode plot from 1 to 1800".PNG}
+  \caption{Task 3 Low-Frequency Vibration Noise Bode Plot}
+  \end{figure}
+The requirement for the Low-Frequency Vibration range was that it must be attenuated by at least -30dB. Here it can be observed that the final filter design attenuated it by -40dB, well within the requirement listed. 
+\clearpage  
+Task 3 Position Measurement Bode Plot:
+\begin{figure}[H]
+\includegraphics[scale=0.6, center]{"task 3 bode plot from 1800 to 2000".PNG}
+  \caption{Task 3 Position Measurement Bode Plot}
+  \end{figure}
+The requirement for the Position Measurement range was that it must be attenuated less than -0.3dB. It can be observed that the design attenuated it to -0.0175, substantially less than what was required.
+\clearpage  
+Task 3 Switching Amplifier Noise:
+\begin{figure}[H]
+\includegraphics[scale=0.6, center]{"task 3 bode plot from 2000 to 100000".PNG}
+  \caption{Task 3 Switching Amplifier Noise}
+  \end{figure}
+The requirement for the Switching Amplifier Noise range that it must be attenuated by at least -21dB. The design got to -30dB.
+\clearpage  
+Task 3 100kHz and Greater Frequency Bode Plot:
+\begin{figure}[H]
+\includegraphics[scale=0.6, center]{"task 3 bode plot from 1e6 to 1e8".PNG}
+  \caption{Task 3 100kHz and Greater Frequency Bode Plot}
+  \end{figure}
+The requirement for any frequency higher than 100kHz was complete attenuation. This was accomplished as seen in the graph above. It can also be noticed in the FFT Switching Amplifier Noise comparison graphs that all noise in that range was filtered out.
+\clearpage  
+
+\section{Error Analysis}
+All results were plotted and agreed to be correct given the filter's purpose. The most difficult part of this lab was designing the filter and going through iterations that didn't complete the requirements. Another obstacle was translating the instructions given into terms that we worked with throughout lab. Engineering academia and real world applications are very different, and it can be difficult to translate from one context to the other.
+
+\section{Questions}
+1. Earlier this semester, you were asked what you personally wanted to get out of taking this
+course. Do you feel like that personal goal was met? Why or why not?\newline
+I felt that it did. My goal was to become more comfortable with Python, which has definitely happened with this lab. I also wanted to see if signal processing was something I'd like to learn in depth, and I think I'll go with that material.\newline
+2. Please fill out the course feedback survey, I will read every word and very much appreciate
+the feedback.\newline
+Will do!\newline
+3. Good luck in the rest of your education and career!\newline
+Thanks! Have fun with quantum mechanics in Colorado, I know you'll be doing a whole bunch of spooky action, but at a distance. 
+
+\section{Conclusion}
+In conclusion, this lab showed the user how to apply the concepts and coding we learned in this lab to a real-world engineering problem. This lab was useful in explaining how band-pass filters and bode plots are useful in analyzing a signal within a certain band-width.
+
+\end{document}
